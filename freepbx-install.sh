@@ -59,7 +59,7 @@ cd /usr/src
 #wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
 #wget http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
 wget -O jansson.tar.gz https://github.com/akheron/jansson/archive/v2.10.tar.gz
-wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-14-current.tar.gz
+wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
 
 echo "Compile and install jansson ... \n\n"
 cd /usr/src
@@ -73,11 +73,43 @@ make install
 
 echo "Compile and Install Asterisk ... \n"
 cd /usr/src
-tar xvfz asterisk-14-current.tar.gz
+tar xvfz asterisk-13-current.tar.gz
 rm -f asterisk-*-current.tar.gz
 cd asterisk-*
 contrib/scripts/install_prereq install
 ./configure --libdir=/usr/lib64 --with-pjproject-bundled
 contrib/scripts/get_mp3_source.sh
 make menuselect
+make
+make install
+make config
+ldconfig
+chkconfig asterisk off
+
+echo "Setting up correct permission ... \n\n"
+chown asterisk. /var/run/asterisk
+chown -R asterisk. /etc/asterisk
+chown -R asterisk. /var/{lib,log,spool}/asterisk
+chown -R asterisk. /usr/lib64/asterisk
+chown -R asterisk. /var/www/
+
+echo "Installing and configuring enviroment for FreePBX ... \n\n"
+sed -i 's/\(^upload_max_filesize = \).*/\120M/' /etc/php.ini
+sed -i 's/^\(User\|Group\).*/\1 asterisk/' /etc/httpd/conf/httpd.conf
+sed -i 's/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
+systemctl restart httpd.service
+
+echo "Download and install FreePBX ... /n/n"
+cd /usr/src
+wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-14.0-latest.tgz
+tar xfz freepbx-14.0-latest.tgz
+rm -f freepbx-14.0-latest.tgz
+cd freepbx
+./start_asterisk start
+./install -n
+
+echo "Cleaning downloads ... \n"
+rm -rf /usr/src/asterisk*
+rm -rf /usr/src/v*
+echo "Installation complete. Please visit the GUI through web browser. \n\n"
 
