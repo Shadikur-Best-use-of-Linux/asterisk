@@ -167,6 +167,7 @@ ExecStop=/usr/sbin/fwconsole stop -q
 [Install]
 WantedBy=multi-user.target
 " > /etc/systemd/system/freepbx.service
+systemctl enable freepbx
 
 echo "${green}Cleaning downloads ... ${normal}"
 sleep 1
@@ -175,5 +176,6 @@ rm -rf /usr/src/v*
 chown -R root:root /var/spool/mqueue/
 chmod 755 -R /var/spool/mqueue/
 yum remove firewalld -y
+
 echo "${green}${bold}Installation complete. Please visit the GUI through web browser. ${normal}"
 
