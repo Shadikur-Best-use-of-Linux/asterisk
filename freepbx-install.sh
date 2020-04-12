@@ -10,6 +10,21 @@ bold=$(tput bold)
 normal=$(tput sgr0)
 green=$(tput setaf 2)
 
+echo "${green}Adding 2GB of Swap Memory. ${normal}\n"
+echo "\n${bold}Processing...Please wait.${normal}\n"
+cd /var
+touch swap.img
+chmod 600 swap.img
+dd if=/dev/zero of=/var/swap.img bs=2048k count=1000
+echo  "${bold}${green}SWAP Processed Successfully${normal}\n"
+mkswap /var/swap.img
+wapon /var/swap.img
+echo "/var/swap.img    none    swap    sw    0    0" >> /etc/fstab
+sysctl -w vm.swappiness=30
+echo  "${bold}${green}SWAP Memory added successfully.${normal}\n"
+free -m
+echo "\n\n"
+
 
 echo "${green}Removing Firewalld...${normal}\\nn"
 yum remove firewalld -y
