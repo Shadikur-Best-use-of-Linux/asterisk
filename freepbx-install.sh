@@ -5,63 +5,69 @@
 #OS: CentOS 7 - 64 bit System
 # Script follows here: 
 
-echo "Removing Firewalld...\\nn"
+#All the variables
+bold=$(tput bold)
+normal=$(tput sgr0)
+green=$(tput setaf 2)
+
+
+echo "${green}Removing Firewalld...${normal}\\nn"
 yum remove firewalld -y
 
 echo "Dsabling SELinux...\n\n"
 sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/sysconfig/selinux
 sed -i 's/\(^SELINUX=\).*/\SELINUX=disabled/' /etc/selinux/config
 
-echo "Check for SEStatus.. \n\n"
+echo "${green}Check for SEStatus.. ${normal}\n\n"
 sestatus
 
-echo "Updating CentOS core ... \n"
+echo "${green}Updating CentOS core ... ${normal}\n"
 yum -y update
 
-echo "Installing Dev Tools... \n\n"
+echo "${green}Installing Dev Tools... ${normal}\n\n"
 yum -y groupinstall core base "Development Tools"
 
-echo "Adding Asterisk User... \n\n"
+echo "${green}Adding Asterisk User... ${normal}\n\n"
 adduser asterisk -m -c "Asterisk User"
 
-echo "Installing dependencies...\n\n"
+echo "${green}Installing dependencies... ${normal}\n\n"
 yum -y install lynx tftp-server unixODBC mysql-connector-odbc mariadb-server mariadb \
   httpd ncurses-devel sendmail sendmail-cf sox newt-devel libxml2-devel libtiff-devel \
   audiofile-devel gtk2-devel subversion kernel-devel git crontabs cronie \
   cronie-anacron wget vim uuid-devel sqlite-devel net-tools gnutls-devel python-devel texinfo \
   libuuid-devel
 
-echo "Installing PHP 5.6 Repository... \n"
+echo "${green}Installing PHP 5.6 Repository... ${normal}\n"
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm
 
-echo "Installaing PHP is in progress ... \n"
+echo "${green}Installaing PHP is in progress ... ${normal}\n"
 yum remove php* -y
 yum install php56w php56w-pdo php56w-mysql php56w-mbstring php56w-pear php56w-process php56w-xml php56w-opcache php56w-ldap php56w-intl php56w-soap -y
 
-echo "Installing Nodjs ... \n"
+echo "${green}Installing Nodjs ... ${normal}\n"
 curl -sL https://rpm.nodesource.com/setup_8.x | bash -
 yum install -y nodejs 
 
-echo "Setting Maria-DB on startup and starting now ... \n\n"
+echo "${green}Setting Maria-DB on startup and starting now ... ${normal}\n\n"
 systemctl enable mariadb.service
 systemctl start mariadb
 
-echo "Setting Apache on startup and starting now ... \n\n"
+echo "${green}Setting Apache on startup and starting now ... ${normal}\n\n"
 systemctl enable httpd.service
 systemctl start httpd.service
 
-echo "Installing Console_Getopt ... \n"
+echo "${green}Installing Console_Getopt ... ${normal}\n"
 pear install Console_Getopt
 
-echo "Downloading Asterisk Files ... \n"
+echo "${green}Downloading Asterisk Files ... ${normal}\n"
 cd /usr/src
 #wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
 #wget http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
 wget -O jansson.tar.gz https://github.com/akheron/jansson/archive/v2.10.tar.gz
 wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
 
-echo "Compile and install jansson ... \n\n"
+echo "${green}Compile and install jansson ... ${normal} \n\n"
 cd /usr/src
 tar vxfz jansson.tar.gz
 rm -f jansson.tar.gz
@@ -71,7 +77,7 @@ autoreconf -i
 make
 make install
 
-echo "Compile and Install Asterisk ... \n"
+echo "${green}Compile and Install Asterisk ... ${normal} \n"
 cd /usr/src
 tar xvfz asterisk-13-current.tar.gz
 rm -f asterisk-*-current.tar.gz
@@ -86,20 +92,20 @@ make config
 ldconfig
 chkconfig asterisk off
 
-echo "Setting up correct permission ... \n\n"
+echo "${green}Setting up correct permission ... ${normal} \n\n"
 chown asterisk. /var/run/asterisk
 chown -R asterisk. /etc/asterisk
 chown -R asterisk. /var/{lib,log,spool}/asterisk
 chown -R asterisk. /usr/lib64/asterisk
 chown -R asterisk. /var/www/
 
-echo "Installing and configuring enviroment for FreePBX ... \n\n"
+echo "${green}Installing and configuring enviroment for FreePBX ... ${normal} \n\n"
 sed -i 's/\(^upload_max_filesize = \).*/\120M/' /etc/php.ini
 sed -i 's/^\(User\|Group\).*/\1 asterisk/' /etc/httpd/conf/httpd.conf
 sed -i 's/AllowOverride None/AllowOverride All/' /etc/httpd/conf/httpd.conf
 systemctl restart httpd.service
 
-echo "Download and install FreePBX ... /n/n"
+echo "${green}Download and install FreePBX ... ${normal} \n\n"
 cd /usr/src
 wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-14.0-latest.tgz
 tar xfz freepbx-14.0-latest.tgz
@@ -108,8 +114,10 @@ cd freepbx
 ./start_asterisk start
 ./install -n
 
-echo "Cleaning downloads ... \n"
+echo "${green}Cleaning downloads ... ${normal}\n"
 rm -rf /usr/src/asterisk*
 rm -rf /usr/src/v*
-echo "Installation complete. Please visit the GUI through web browser. \n\n"
+chown -R root:root /var/spool/mqueue/
+chmod 755 -R /var/spool/mqueue/
+echo "${green}${bold}Installation complete. Please visit the GUI through web browser. ${normal}\n\n"
 
