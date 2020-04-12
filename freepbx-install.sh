@@ -174,5 +174,6 @@ rm -rf /usr/src/asterisk*
 rm -rf /usr/src/v*
 chown -R root:root /var/spool/mqueue/
 chmod 755 -R /var/spool/mqueue/
+yum remove firewalld -y
 echo "${green}${bold}Installation complete. Please visit the GUI through web browser. ${normal}"
 
