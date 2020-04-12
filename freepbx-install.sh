@@ -11,7 +11,7 @@ normal=$(tput sgr0)
 green=$(tput setaf 2)
 
 echo "${green}Adding 2GB of Swap Memory. ${normal}"
-echo "\n${bold}Processing...Please wait.${normal}"
+echo "${bold}Processing...Please wait.${normal}"
 cd /var
 touch swap.img
 chmod 600 swap.img
