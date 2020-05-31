@@ -94,8 +94,8 @@ pear install Console_Getopt
 echo "${green}Downloading Asterisk Files ... ${normal}"
 sleep 1
 cd /usr/src
-#wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
-#wget http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
+wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz
+wget http://downloads.asterisk.org/pub/telephony/libpri/libpri-current.tar.gz
 wget -O jansson.tar.gz https://github.com/akheron/jansson/archive/v2.10.tar.gz
 wget http://downloads.asterisk.org/pub/telephony/asterisk/asterisk-13-current.tar.gz
 
@@ -144,9 +144,9 @@ systemctl restart httpd.service
 echo "${green}Download and install FreePBX ... ${normal} "
 sleep 1
 cd /usr/src
-wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-14.0-latest.tgz
-tar xfz freepbx-14.0-latest.tgz
-rm -f freepbx-14.0-latest.tgz
+wget http://mirror.freepbx.org/modules/packages/freepbx/freepbx-13.0-latest.tgz
+tar xfz freepbx-13.0-latest.tgz
+rm -f freepbx-13.0-latest.tgz
 cd freepbx
 ./start_asterisk start
 ./install -n
