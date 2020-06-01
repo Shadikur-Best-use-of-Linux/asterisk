@@ -2,7 +2,7 @@
 
 # Author : M Rahman
 # Copyright (c) shadikur.com
-#OS: CentOS 7 - 64 bit System
+#OS: CentOS 6.8 - 64 bit System
 # Script follows here: 
 
 #All the variables
@@ -56,7 +56,7 @@ adduser asterisk -m -c "Asterisk User"
 
 echo "${green}Installing dependencies... ${normal}"
 sleep 1
-yum -y install lynx tftp-server unixODBC mysql-connector-odbc mariadb-server mariadb \
+yum -y install lynx tftp-server unixODBC mysql-connector-odbc mysql-devel mysql-server\
   httpd ncurses-devel sendmail sendmail-cf sox newt-devel libxml2-devel libtiff-devel \
   audiofile-devel gtk2-devel subversion kernel-devel git crontabs cronie \
   cronie-anacron wget vim uuid-devel sqlite-devel net-tools gnutls-devel python-devel texinfo \
@@ -79,17 +79,18 @@ yum install -y nodejs
 
 echo "${green}Setting Maria-DB on startup and starting now ... ${normal}"
 sleep 1
-systemctl enable mariadb.service
-systemctl start mariadb
+chkconfig --level 345 mysqld on
+service mysqld start
 
 echo "${green}Setting Apache on startup and starting now ... ${normal}"
 sleep 1
-systemctl enable httpd.service
-systemctl start httpd.service
+chkconfig --level 345 httpd on
+service httpd start
 
 echo "${green}Installing Console_Getopt ... ${normal}"
 sleep 1
-pear install Console_Getopt
+pear channel-update pear.php.net
+pear install db-1.7.14
 
 echo "${green}Downloading Asterisk Files ... ${normal}"
 sleep 1
@@ -176,6 +177,9 @@ rm -rf /usr/src/v*
 chown -R root:root /var/spool/mqueue/
 chmod 755 -R /var/spool/mqueue/
 yum remove firewalld -y
+
+chkconfig --level 0123456 iptables off
+service iptables stop
 
 echo "${green}${bold}Installation complete. Please visit the GUI through web browser. ${normal}"
 
