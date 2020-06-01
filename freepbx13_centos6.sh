@@ -2,7 +2,7 @@
 
 # Author : M Rahman
 # Copyright (c) shadikur.com
-#OS: CentOS 6.8 - 64 bit System
+# OS: CentOS 6.8 - 64 bit System
 # Script follows here: 
 
 #All the variables
@@ -125,7 +125,7 @@ make
 make install
 make config
 ldconfig
-chkconfig asterisk off
+chkconfig asterisk on
 
 echo "${green}Setting up correct permission ... ${normal} "
 sleep 1
